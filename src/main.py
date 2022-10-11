@@ -20,6 +20,9 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
+
+usuarios = {'Agustin':'Agustin','Gonzalo':'Gonzalo','Daniel':'Daniel','Ronald':'Ronald','Jen': 'Jen'}
+
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -31,13 +34,21 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def get_user():
+    return jsonify(usuarios), 200
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+@app.route('/user', methods=['POST'])
+def save_user():
+    add = request.args.get('user')
+    value = request.args.get('value')
+    usuarios[add] = value
+    return jsonify(usuarios), 200
 
-    return jsonify(response_body), 200
+@app.route('/user', methods=['DELETE'])
+def delete_user():
+    dele = request.args.get('user')
+    usuarios.pop(dele)
+    return jsonify(usuarios), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
